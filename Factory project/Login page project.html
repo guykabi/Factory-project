@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="stylesheet" href="mystyle.css">
+    <title>Login</title>  
+    <style>
+  body{
+      text-align: center;  
+      background: rgb(211,200,200);
+background: linear-gradient(90deg, rgba(211,200,200,1) 10%, rgba(149,131,133,1) 39%, rgba(150,128,128,0.9812967423297444) 86%, rgba(208,192,192,1) 100%);
+font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  }
+  button{
+    background-color: rgba(51, 51, 51, 0.05);
+    border-radius: 8px;
+    border-width: 0;
+    color:    rgb(14, 10, 10);
+    cursor: pointer;
+    display: inline-block;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 10px 12px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation; 
+    margin-top: 20px; 
+    
+} 
+
+button:hover{
+    background-color: rgba(214, 206, 214, 0.733);
+}   
+input{
+    border: 0px; 
+    background-color: rgba(240, 248, 255, 0); 
+    width: 200px; 
+    height: 30px;
+}
+ ::placeholder{
+     color: rgba(0, 0, 0, 0.678);
+     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+ }
+
+
+
+
+    </style>
+
+    <script>
+    
+    async function getuser()
+    {
+        let userName =  document.getElementById("username").value 
+        let password =  document.getElementById("password").value 
+         
+         
+
+        let data1 = await fetch("https://localhost:44315/api/User?u1=" + userName + "&u2=" + password)
+        data2 = await data1.json() 
+          console.log(data2[0]) 
+
+          if(data2[0]==="User does not exists")
+          {
+              let para = document.getElementById("para")
+              para.innerText=data2
+          } 
+          else
+          {
+              location.href ="Home Page project.html?fname=" + data2[0] + "&userid=" + data2[1];
+          }
+    }
+
+
+
+
+
+
+
+    </script>
+</head>
+<body>
+     
+     <h1>Welcome</h1> <br> <br> <br> 
+     <div> 
+         <h3>Log in</h3> <br><br>
+         <input type="text" " id="username" placeholder="Username"> <br> <br>
+         <input type="password"  id="password" placeholder="Password">  <br> <br> 
+         <button onclick="getuser()" >Log in</button> <br> <br> 
+         <span id="para"></span>
+     </div>
+
+
+
+</body>
+</html>

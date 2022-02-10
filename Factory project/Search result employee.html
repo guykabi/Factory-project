@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+</head> 
+<style>
+    body{
+        text-align: center; 
+        background: rgb(211,200,200);
+background: linear-gradient(90deg, rgba(211,200,200,1) 10%, rgba(149,131,133,1) 39%, rgba(150,128,128,0.9812967423297444) 86%, rgba(208,192,192,1) 100%);
+    } 
+    button{
+    background-color: rgba(51, 51, 51, 0.05);
+    border-radius: 8px;
+    border-width: 0;
+    color: #333333;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 10px 12px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation; 
+    margin-top: 20px; 
+    
+} 
+
+button:hover{
+    background-color: rgba(214, 206, 214, 0.733);
+} 
+</style> 
+
+
+
+<script>
+   
+   let fname ; 
+   let userid ; 
+   let qr ; 
+   let fn;
+   let ln
+    
+   function userData()
+   {
+   const params = new URLSearchParams(window.location.search);
+        fname  =  params.get("fname")
+        userid = params.get("userid")  
+        qr = params.get("q")   
+        fn = params.get("fn") 
+        ln = params.get("ln")
+              
+   }   
+
+
+
+async function searchbox()
+    {
+         
+        let data1 = await fetch("https://localhost:44315/api/Employee?dep=" + qr + "&fname=" + fn + "&lname=" + ln)
+        let data2 = await data1.json() 
+        console.log(data2)  
+        let table = document.getElementById("table")
+      let num = 1
+            for(let i =0; i<data2.length; i++)
+           { 
+          let tdsign = document.createElement("td")
+           tdsign.innerText = num++
+           let tdFname = document.createElement("td") 
+           tdFname.innerText = data2[i].First_name  
+           let tdLname = document.createElement("td")
+           tdLname.innerText = data2[i].Last_name  
+           let tdStartYear = document.createElement("td")  
+           tdStartYear.innerText = data2[i].Start_year  
+           let tdDepartment = document.createElement("td")
+           tdDepartment.innerText = data2[i].Department 
+           let tdShifts = document.createElement("td") 
+           data2[i].shifts.forEach(x => {
+                  let li = document.createElement("li") 
+                  li.innerText = x  
+                  let ul = document.createElement("ul").appendChild(li) 
+                  tdShifts.appendChild(ul) 
+           });    
+
+           let tdOperation = document.createElement("td") 
+           let editBtn=  document.createElement("button") 
+           editBtn.innerText = "Edit"   
+          let aEdit =  document.createElement("a")
+           aEdit.href = "Edit Employee page.html?id=" + data2[i].ID + "&userid=" + userid + "&fname=" + fname
+           aEdit.appendChild(editBtn)  
+
+           let deleteBtn=  document.createElement("button") 
+           deleteBtn.innerText = "Delete"   
+           let aDelete =  document.createElement("a") 
+           deleteBtn.onclick = async function deleteEmployee(eve) //delete employee operation + put to user 
+            {
+                       fetchParams = {
+                                      method : "DELETE",
+                                      headers : {"Content-type"  :"application/json"}
+                                     } 
+
+                     let deletdata = await  fetch("https://localhost:44315/api/Employee/"+ data2[i].ID ,fetchParams) 
+
+                     let obj2 = {User_name:fname}
+
+        let fetchParams2 = { 
+                              method : "PUT",
+                              body : JSON.stringify(obj2), 
+                             headers : {"Content-type"  :"application/json" }
+                            }  
+
+                            let userdata = await fetch("https://localhost:44315/api/User/"+userid, fetchParams2) 
+                            let userdata2= await userdata.json() 
+                            console.log(userdata2)  
+                            
+                            sessionStorage.setItem('useraction', `${userdata2}`)
+
+                            location.href = "Department page project.html?fname=" + fname + "&userid=" + userid 
+                        
+                      location.href = "Employee page project.html?fname=" + fname + "&userid=" + userid //For refresh the page
+                      eve.preventDefault();
+            }  
+
+           aDelete.appendChild(deleteBtn)  
+                
+           let addBtn=  document.createElement("button") 
+           addBtn.innerText = "Add shift"   
+          let aAdd =  document.createElement("a")
+           aAdd.href = "Add shift to employee page.html?id="  + data2[i].ID + "&userid=" + userid + "&fname=" + fname
+           aAdd.appendChild(addBtn)
+           
+           tdOperation.appendChild(aEdit) 
+           tdOperation.appendChild(aDelete) 
+           tdOperation.appendChild(aAdd)
+           let tr = document.createElement("tr") 
+           tr.appendChild(tdsign) , tr.appendChild(tdFname), tr.appendChild(tdLname), tr.appendChild(tdStartYear)
+           tr.appendChild(tdDepartment), tr.appendChild(tdShifts),tr.appendChild(tdOperation)
+            
+            table.appendChild(tr);
+            table.style.visibility="visible"
+               
+      }
+        
+
+    }  
+
+    function returnshiftpage()
+    {
+        location.href = "Employee page project.html?fname=" + fname + "&userid=" + userid 
+
+   }
+
+
+
+
+
+</script>
+
+
+<body onload="userData(),searchbox()"> 
+    <h2> Your result</h2> <br> <br> 
+    <table id="table" class="table" style="visibility: collapse;"> 
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Start Year</th>
+                <th scope="col">Department</th>
+                <th scope="col">Shifts</th>
+                 <th></th>  <!--add/edit/delete buttons -->
+            </tr>
+        </thead> 
+        <tbody id="tbody">
+
+        </tbody>
+    </table> <br> <br> <br> 
+
+    <button onclick="returnshiftpage()">Return</button>
+    
+</body>
+</html>

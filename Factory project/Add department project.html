@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Department</title> 
+
+    <style>
+         body{
+             text-align: center; 
+             background: rgb(211,200,200);
+background: linear-gradient(90deg, rgba(211,200,200,1) 10%, rgba(149,131,133,1) 39%, rgba(150,128,128,0.9812967423297444) 86%, rgba(208,192,192,1) 100%);
+         } 
+         button{
+    background-color: rgba(51, 51, 51, 0.05);
+    border-radius: 8px;
+    border-width: 0;
+    color:    rgba(48, 44, 44, 0.575);
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 10px 12px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation; 
+    margin-top: 20px; 
+    
+} 
+
+button:hover{
+    background-color: rgba(214, 206, 214, 0.733);
+} 
+
+
+    </style> 
+      
+        
+      
+    <script> 
+    //catching from URL
+    let userid;  
+    let fname;  
+   function userData()
+   {
+   const params = new URLSearchParams(window.location.search);
+        fname = params.get("fname");   
+        userid = params.get("userid");
+    }    
+    
+    //insert to select input
+   async function getManager()
+   {
+        let data1 = await fetch("https://localhost:44315/api/Employee") 
+        let data2 = await data1.json() 
+        let select = document.getElementById("selectmanager") 
+
+        for(let i=0; i<data2.length; i++)
+        {
+            let option = document.createElement("option") 
+            option.innerText = data2[i].First_name
+            select.appendChild(option)
+        } 
+
+   }
+   
+
+   // server request
+    async function addDepartment()
+    { 
+        let select = document.getElementById("selectmanager")
+        let departName = document.getElementById("departmentname").value  
+        let manager =  select.options[select.selectedIndex].innerText 
+         
+        if(departName==="" || manager==="Select manager")
+           {
+              document.getElementById("para").innerText= "Cannot add empty fields" 
+           } 
+           else
+           {
+
+          let obj = {Name:departName , Manager_ID:manager}
+          
+          let fetchParams = { 
+                              method : "POST",
+                              body : JSON.stringify(obj),
+                              headers : {"Content-type"  :"application/json"} 
+                            } 
+
+                            let data1= await fetch("https://localhost:44315/api/Department/" , fetchParams) 
+                            let data2 = await data1.json()
+          
+                if(data2==="Created")
+                {
+       
+        let obj2 = {User_name:fname}
+
+        let fetchParams2 = { 
+                              method : "PUT",
+                              body : JSON.stringify(obj2), 
+                              headers : {"Content-type"  :"application/json"}
+                            }  
+
+                            let userdata = await fetch("https://localhost:44315/api/User/"+ userid, fetchParams2) 
+                            let userdata2= await userdata.json() 
+                            console.log(userdata2) 
+                            if(userdata2 === "Run out of actions")
+                              {
+                                location.href = "Login page project.html"
+                              }
+                              else 
+                              {
+                                sessionStorage.setItem('useraction', `${userdata2}`)  
+                                location.href = "Department page project.html?fname=" + fname + "&userid=" + userid
+                              }
+                            
+                        
+                }
+               
+
+            }
+
+                    
+    }
+
+
+    function returndepartments()
+    {
+        location.href= "Department page project.html?fname=" + fname + "&userid=" + userid
+    }
+
+
+    </script>
+</head>
+<body onload="getManager() ,userData()"> 
+
+    <div> 
+        <span>Add new department</span> <br> <br> 
+        <input type="text"  id="departmentname" placeholder="Name"> <br><br>
+        <select  id="selectmanager">
+          <option value="">Select manager</option>
+        </select>
+         <br><br> <br><br><br>
+        <button onclick="addDepartment()">Add</button> &nbsp; &nbsp; <button onclick="returndepartments()">Return to departments</button>
+
+    </div>
+    
+</body>
+</html>

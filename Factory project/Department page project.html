@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departments</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+</head>   
+
+<style>
+*{ 
+margin: 0px;
+padding: 0px;
+box-sizing: border-box; 
+    } 
+    
+    body{
+        text-align: center;
+        background: rgb(211,200,200);
+background: linear-gradient(90deg, rgba(211,200,200,1) 10%, rgba(149,131,133,1) 39%, rgba(150,128,128,0.9812967423297444) 86%, rgba(208,192,192,1) 100%);
+    }
+    button{
+    background-color: rgba(51, 51, 51, 0.05);
+    border-radius: 8px;
+    border-width: 0;
+    color:    rgba(48, 44, 44, 0.575);
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 10px 12px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation; 
+    margin-top: 20px; 
+    
+} 
+
+button:hover{
+    background-color: rgba(214, 206, 214, 0.733);
+} 
+
+  
+
+
+nav{ 
+ display: flex;
+ justify-content: space-around;
+ align-items: center;
+ min-height: 8vh;
+ background-color: #5d4954;
+ font-family: 'Poppins', sans-serif;  
+ height: 70px; 
+ width: 100%; 
+ color: white;
+ 
+} 
+h1{
+    text-align: center;
+}
+ .h4{
+     color: rgb(255, 255, 255);
+     text-transform: uppercase; 
+     letter-spacing: 5px; 
+     font-size: 14px;
+ } 
+
+ .lis{ 
+   
+     display: flex; 
+     justify-content: space-around;
+     width: 40% ;  
+ } 
+
+ .lis a{
+    color: rgb(255, 255, 255);
+    text-decoration: none; 
+    letter-spacing: 3px; 
+    font-size: 14px;
+ }  
+  .lis :hover{
+      color: rgb(48, 43, 43);
+  }
+ 
+  
+ .lis li{
+list-style: none; 
+
+ }  
+ 
+ .burger a{
+    text-decoration: none; 
+    list-style: none;  
+    color: rgb(255, 255, 255);
+
+ }
+ button{
+    background-color: rgba(51, 51, 51, 0.05);
+    border-radius: 8px;
+    border-width: 0;
+    color: #333333;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 10px 12px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation; 
+    margin-top: 20px; 
+    
+} 
+
+button:hover{
+    background-color: rgba(214, 206, 214, 0.733);
+}  
+#showaction{
+    color: white;
+}
+  
+ 
+
+
+
+
+</style> 
+
+
+<script>
+  
+  //catching from URL
+  let fname ; 
+  let userid; 
+ 
+   function userData()
+   {
+   const params = new URLSearchParams(window.location.search);
+        fname  =  params.get("fname")
+        userid = params.get("userid")  
+        document.getElementById("username").innerText = fname  
+        
+    } 
+ 
+
+    //catching from session storage
+    function useract()
+    { 
+        if(sessionStorage.getItem('useraction')!="")
+        {  
+             let action =  sessionStorage.getItem('useraction')
+             
+             document.getElementById("showaction").innerText=action
+        }
+    }
+    
+//pages links
+  function movetoadddepartment()
+  {
+      location.href="Add department project.html?fname=" + fname + "&userid" + userid
+  } 
+
+  function movetohome()
+    {
+        location.href = "Home Page project.html?fname=" + fname + "&userid=" + userid
+    } 
+    function movetoemployee()
+    { 
+        location.href = "Employee page project.html?fname=" + fname + "&userid=" + userid 
+    } 
+    function movetoshift()
+    {
+        location.href = "Shifts page project.html?fname=" + fname + "&userid=" + userid
+    } 
+
+
+    ////server requests  
+   
+    async function departmenttable()
+    {
+        let data1 = await fetch("https://localhost:44315/api/Department") 
+        let data2 = await data1.json()  
+        let table = document.getElementById("table") 
+         let num = 0 
+         
+        for(let i=0; i<data2.length;i++)
+        { 
+            num++
+           let tdSign = document.createElement("td") 
+           tdSign.innerText=num 
+           let tdName = document.createElement("td") 
+           tdName.innerText = data2[i].Name  
+           let tdManager = document.createElement("td") 
+           tdManager.innerText=data2[i].Manager_ID  
+           let tdOpeartion = document.createElement("td")  
+
+           let editBtn=  document.createElement("button") 
+           editBtn.innerText = "Edit"   
+           let aEdit =  document.createElement("a")
+           aEdit.href = "Edit Department page.html?id=" + data2[i].ID + "&userid=" + userid +"&fname=" + fname
+           aEdit.appendChild(editBtn)
+           
+           let deleteBtn=  document.createElement("button") 
+           deleteBtn.innerText = "Delete"   
+           let aDelete =  document.createElement("a")
+           deleteBtn.onclick = async function deletdeprat(eve) //delete employee operation + put to user
+           {
+            let fetchParams =   {method : "DELETE",
+                                 headers : {"Content-type"  :"application/json"} } 
+
+                        let deletdata =  await fetch("https://localhost:44315/api/Department/"+ data2[i].ID , fetchParams) 
+                        let deletdata2 = await deletdata.json() 
+                        console.log(deletdata2) 
+                        if(deletdata2>0)
+                        {
+                            alert("Cannot delete department with employees!")
+                        }   
+        let obj2 = {User_name:fname}
+
+        let fetchParams2 = { 
+                              method : "PUT",
+                              body : JSON.stringify(obj2), 
+                             headers : {"Content-type"  :"application/json" }
+                            }  
+
+                            let userdata = await fetch("https://localhost:44315/api/User/"+userid, fetchParams2) 
+                            let userdata2= await userdata.json() 
+                            console.log(userdata2)   
+                            sessionStorage.setItem('useraction', `${userdata2}`)
+                            location.href = "Department page project.html?fname=" + fname + "&userid=" + userid
+
+                        eve.preventDefault();       
+                        }
+            
+           aDelete.appendChild(deleteBtn)
+
+           tdOpeartion.appendChild(aEdit)
+           tdOpeartion.appendChild(aDelete) 
+
+           let tr = document.createElement("tr") 
+           tr.appendChild(tdSign), tr.appendChild(tdName),
+           tr.appendChild(tdManager), tr.appendChild(tdOpeartion)
+           table.appendChild(tr) 
+           table.style.visibility="visible"
+
+        }
+    } 
+
+
+   
+
+
+</script>
+
+
+<body onload="userData() , departmenttable(), useract()" > 
+
+
+    <nav> 
+        <div>
+           <h4 class="h4" id="username"></h4><span id="showaction"></span>
+        </div> 
+        <ul class="lis"> 
+            <li> <a onclick="movetohome()" href="#" > Home</a></li>
+            <li> <a onclick="movetoemployee()" href="#">Employees</a></li>
+            <li> <a href="">Departments</a></li>
+            <li> <a onclick="movetoshift()" href="#"> Shifts</a></li>
+           
+        </ul> 
+        <div class="burger">
+            <span id="logout"> <a href="Login page project.html"> Log out </a></span>
+        </div>
+        
+     </nav> <br> <br>
+
+
+<h1>Departments</h1>   <br><br><br>  
+
+<table style="visibility: hidden;" id="table" class="table"> 
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Manager</th> 
+            <th scope="col">Operation</th>
+        </tr>
+    </thead> 
+    <tbody id="tbody"> 
+
+    </tbody>
+</table> <br> 
+<button onclick="movetoadddepartment()">Add new department</button> 
+
+
+
+
+
+    
+</body>
+</html>

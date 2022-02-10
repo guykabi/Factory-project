@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=
+    , initial-scale=1.0">
+    <title>Add shift</title> 
+    <style>
+       
+
+       body{
+           text-align: center;
+           background: rgb(211,200,200);
+background: linear-gradient(90deg, rgba(211,200,200,1) 10%, rgba(149,131,133,1) 39%, rgba(150,128,128,0.9812967423297444) 86%, rgba(208,192,192,1) 100%);
+       } 
+       button{
+    background-color: rgba(51, 51, 51, 0.05);
+    border-radius: 8px;
+    border-width: 0;
+    color:    rgba(48, 44, 44, 0.575);
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 10px 12px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation; 
+    margin-top: 20px; 
+    
+} 
+
+button:hover{
+    background-color: rgba(214, 206, 214, 0.733);
+} 
+
+    </style> 
+
+    <script> 
+    //Catching from URL
+
+      let fname ; 
+      let userid ; 
+ 
+   function userData()
+   {
+   const params = new URLSearchParams(window.location.search);
+        fname  =  params.get("fname")
+        userid = params.get("userid")  
+               
+   }    
+
+  console.log(document.getElementById("date").value)
+  console.log(document.getElementById("Start").value)
+  //add shift to shift table function
+    async function addshift()
+   {
+       let date =  document.getElementById("date").value 
+       let start =  document.getElementById("Start").value 
+       let end =  document.getElementById("end").value 
+       if(date === null && start === null && end === null)
+       {
+          document.getElementById("para").innerText = "You must set date and time"
+       } 
+       else
+       { 
+       let obj = {Date:date , strat_time:start , End_time:end} 
+
+       let fetchParams = {
+                              method : "POST",
+                              body : JSON.stringify(obj),
+                              headers : {"Content-type"  :"application/json"}
+                         } 
+                         let data1 = await fetch("https://localhost:44315/api/Shift/", fetchParams) 
+                         let data2 = await data1.json()  
+                         if (data2 ==="Created")
+                         {
+                            let obj2 ={User_name:fname} 
+                             let fetchParams2 = { method : "PUT",
+                                                  body : JSON.stringify(obj2), 
+                                                  headers : {"Content-type"  :"application/json"}
+                                                } 
+
+                            let shiftdata = await fetch("https://localhost:44315/api/User/"+ userid, fetchParams2) 
+                            let shiftdata2= await shiftdata.json() 
+                            console.log(shiftdata2)  
+                            if(shiftdata2 === "Run out of actions")
+                              {
+                                location.href = "Login page project.html"
+                              } 
+                              else
+                              {
+                            sessionStorage.setItem('useraction', `${shiftdata2}`)
+                            location.href = "Shifts page project.html?fname=" + fname + "&userid=" + userid
+                              }
+                         } 
+                         
+
+         }
+   
+    } 
+
+    function returntoshifts() 
+    {
+      location.href = "Shifts page project.html?fname=" + fname + "&userid" + userid
+
+    }
+    </script>
+</head>
+<body onload="userData()"> 
+    <h2>Add shift</h2> <br><br> 
+    <div>
+        <input type="date" id="date" placeholder="Date"> <br> <br> 
+        <input type="time" id="Start" placeholder="Strat" > <br> <br>
+        <input type="time" id="end" placeholder="End"> <br> <br> <br>
+        <span id="para"></span> <br><br>
+        <button onclick="addshift()">Add</button> &nbsp; &nbsp; <button onclick="returntoshifts()">Return</button> <!-- מחזיר אוטומטית לעמוד של המשמרות --> 
+    </div>
+    
+    
+</body>
+</html>
